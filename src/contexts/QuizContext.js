@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 
 const QuizContext = createContext();
+const QUIZ_URL = "https://api.jsonbin.io/v3/b";
+const BIN_ID = "664b1bdbe41b4d34e4f69478";
 
 const SECS_PER_QUESTION = 30;
 const initialState = {
@@ -73,9 +75,11 @@ function QuizProvider({ children }) {
   );
 
   useEffect(function () {
-    fetch("http://localhost:8000/questions")
+    fetch(`${QUIZ_URL}/${BIN_ID}/latest`)
       .then((res) => res.json())
-      .then((data) => dispatch({ type: "dataReceived", payload: data }))
+      .then((data) =>
+        dispatch({ type: "dataReceived", payload: data.record.questions })
+      )
       .catch((err) => dispatch({ type: "dataFailed" }));
   }, []);
 
@@ -86,6 +90,8 @@ function QuizProvider({ children }) {
         status,
         index,
         answer,
+        numOfQuestions,
+        maxPossiblePoints,
         points,
         highscore,
         secondsRemaining,
